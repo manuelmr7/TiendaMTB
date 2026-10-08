@@ -8,10 +8,14 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>JSP Page</title>
+        <meta charset="UTF-8">
+        <title>Tienda MTB - Error</title>
+        <link href="/tienda/css/main.css" rel="stylesheet" type="text/css"/>
     </head>
     <body>
-        <h1>ERROR</h1>
+        <h1>Tienda MTB</h1>
+        <h3>Ha ocurrido un error</h3>
+        <p><c:out value="${requestScope.msg}" default="La página solicitada no existe o la acción no está permitida."/></p>
+        <a href="/tienda/users">Inicio</a>
     </body>
 </html>
