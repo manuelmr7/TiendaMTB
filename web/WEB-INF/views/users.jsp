@@ -30,6 +30,6 @@
         <c:if test="${empty requestScope.users}">
             <p>Oops! No hay Usuarios todavía!</p>
         </c:if>
-            <<script src="/tienda/js/functions.js"></script>
+            <script src="/tienda/js/functions.js"></script>
     </body>
 </html>
