@@ -8,7 +8,15 @@
         <link href="/tienda/css/main.css" rel="stylesheet" type="text/css"/>
     </head>
     <body>
-        <nav> | <a href="/tienda/user/new">Crear Nuevo Usuario</a> | </nav>
+        <nav>
+            | <a href="/tienda/user/new">Crear Nuevo Usuario</a> |
+            <c:if test="${empty sessionScope.usuario}">
+                <a href="/tienda/auth/login">Entrar</a> |
+            </c:if>
+            <c:if test="${!empty sessionScope.usuario}">
+                Hola ${sessionScope.usuario.name} | <a href="/tienda/auth/logout">Salir</a> |
+            </c:if>
+        </nav>
         <h1>Tienda MTB</h1>
 
         <c:if test="${!empty requestScope.users}">
@@ -30,6 +38,5 @@
         <c:if test="${empty requestScope.users}">
             <p>Oops! No hay Usuarios todavía!</p>
         </c:if>
-            <script src="/tienda/js/functions.js"></script>
     </body>
 </html>
