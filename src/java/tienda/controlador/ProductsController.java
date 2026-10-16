@@ -4,13 +4,18 @@
  */
 package tienda.controlador;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.servlet.RequestDispatcher;
 import java.io.IOException;
-import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.util.List;
+import java.util.logging.Logger;
+import tienda.modelo.Product;
 
 /**
  *
@@ -18,6 +23,10 @@ import jakarta.servlet.http.HttpServletResponse;
  */
 @WebServlet(name = "ProductsController", urlPatterns = {"/products"})
 public class ProductsController extends HttpServlet {
+    @PersistenceContext(unitName = "TiendaPU")
+    private EntityManager em;
+    private static final Logger Log = Logger.getLogger(ProductsController.class.getName());
+
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -28,22 +37,7 @@ public class ProductsController extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
-    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
-        try (PrintWriter out = response.getWriter()) {
-            /* TODO output your page here. You may use following sample code. */
-            out.println("<!DOCTYPE html>");
-            out.println("<html>");
-            out.println("<head>");
-            out.println("<title>Servlet ProductsController</title>");
-            out.println("</head>");
-            out.println("<body>");
-            out.println("<h1>Servlet ProductsController at " + request.getContextPath() + "</h1>");
-            out.println("</body>");
-            out.println("</html>");
-        }
-    }
+    
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
@@ -57,7 +51,10 @@ public class ProductsController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        List<Product> lista=em.createNamedQuery("Product.findAll",Product.class).getResultList();
+        request.setAttribute("products",lista);
+        RequestDispatcher rd=request.getRequestDispatcher("/WEB-INF/views/catalogo.jsp");
+        rd.forward(request,response);
     }
 
     /**
@@ -68,11 +65,6 @@ public class ProductsController extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        processRequest(request, response);
-    }
 
     /**
      * Returns a short description of the servlet.
