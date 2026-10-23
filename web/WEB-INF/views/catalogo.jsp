@@ -35,6 +35,7 @@
                     <th>Precio</th>
                     <th>Stock</th>
                     <th>Foto</th>
+                    <th>Detalle</th>
                 </tr>
                 <c:forEach var="p" items="${requestScope.products}">
                     <tr>
@@ -47,6 +48,7 @@
                                 <img src="${pageContext.request.contextPath}/img/${p.imageFile}" alt="${p.name}" width="120">
                             </c:if>
                         </td>
+                        <td><a href="${pageContext.request.contextPath}/product?id=${p.id}">Ver</a></td>
                     </tr>
                 </c:forEach>
                 </table>

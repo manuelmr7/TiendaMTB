@@ -21,12 +21,12 @@ import tienda.modelo.Product;
  *
  * @author manue
  */
-@WebServlet(name = "ProductsController", urlPatterns = {"/products"})
+@WebServlet(name = "ProductsController", urlPatterns = {"/products", "/product"})
 public class ProductsController extends HttpServlet {
+
     @PersistenceContext(unitName = "TiendaPU")
     private EntityManager em;
     private static final Logger Log = Logger.getLogger(ProductsController.class.getName());
-
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -37,8 +37,6 @@ public class ProductsController extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
-    
-
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
      * Handles the HTTP <code>GET</code> method.
@@ -51,10 +49,31 @@ public class ProductsController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        List<Product> lista=em.createNamedQuery("Product.findAll",Product.class).getResultList();
-        request.setAttribute("products",lista);
-        RequestDispatcher rd=request.getRequestDispatcher("/WEB-INF/views/catalogo.jsp");
-        rd.forward(request,response);
+        String idParam = request.getParameter("id"); //Compruebo si la petición trae un parámetro id (ej: /producto?id=1)
+        if (idParam != null && !idParam.isEmpty()) {
+            try {
+                Long id = Long.parseLong(idParam);
+                //Busco el producto individual usando EntityManager
+                Product product = em.find(Product.class, id);
+                if (product != null) {
+                    //Si el producto existe, lo paso a la vista de detalle
+                    request.setAttribute("product", product);
+                    RequestDispatcher rd1 = request.getRequestDispatcher("/WEB-INF/views/detalle.jsp");
+                    rd1.forward(request, response);
+                } else {
+                    response.sendRedirect(request.getContextPath() + "/products");
+                }
+            } catch (NumberFormatException e) {
+                //Si el ID no es un número válido, redirigimos por seguridad
+                response.sendRedirect(request.getContextPath() + "/products");
+            }
+        } else {
+            List<Product> lista = em.createNamedQuery("Product.findAll", Product.class).getResultList();
+            request.setAttribute("products", lista);
+            RequestDispatcher rd = request.getRequestDispatcher("/WEB-INF/views/catalogo.jsp");
+            rd.forward(request, response);
+        }
+
     }
 
     /**
@@ -65,7 +84,6 @@ public class ProductsController extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
-
     /**
      * Returns a short description of the servlet.
      *
