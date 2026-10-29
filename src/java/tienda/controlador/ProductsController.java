@@ -49,31 +49,27 @@ public class ProductsController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String idParam = request.getParameter("id"); //Compruebo si la petición trae un parámetro id (ej: /producto?id=1)
+
+        String idParam = request.getParameter("id");
+
         if (idParam != null && !idParam.isEmpty()) {
-            try {
-                Long id = Long.parseLong(idParam);
-                //Busco el producto individual usando EntityManager
-                Product product = em.find(Product.class, id);
-                if (product != null) {
-                    //Si el producto existe, lo paso a la vista de detalle
-                    request.setAttribute("product", product);
-                    RequestDispatcher rd1 = request.getRequestDispatcher("/WEB-INF/views/detalle.jsp");
-                    rd1.forward(request, response);
-                } else {
-                    response.sendRedirect(request.getContextPath() + "/products");
-                }
-            } catch (NumberFormatException e) {
-                //Si el ID no es un número válido, redirigimos por seguridad
-                response.sendRedirect(request.getContextPath() + "/products");
-            }
+            Long id = Long.parseLong(idParam);
+            Product product = em.find(Product.class, id);
+
+            request.setAttribute("product", product);
+            // Indicamos a template.jsp que cargue detalle.jsp
+            request.setAttribute("view", "detalle");
         } else {
             List<Product> lista = em.createNamedQuery("Product.findAll", Product.class).getResultList();
+
             request.setAttribute("products", lista);
-            RequestDispatcher rd = request.getRequestDispatcher("/WEB-INF/views/catalogo.jsp");
-            rd.forward(request, response);
+            // Indicamos a template.jsp que cargue catalogo.jsp
+            request.setAttribute("view", "catalogo");
         }
 
+        // Siempre abrimos template.jsp, tal como pide el profesor
+        RequestDispatcher rd = request.getRequestDispatcher("/WEB-INF/views/template.jsp");
+        rd.forward(request, response);
     }
 
     /**
