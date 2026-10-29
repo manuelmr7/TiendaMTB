@@ -55,7 +55,13 @@ public class ProductsController extends HttpServlet {
         if (idParam != null && !idParam.isEmpty()) {
             Long id = Long.parseLong(idParam);
             Product product = em.find(Product.class, id);
-
+            
+            //El producto no existe: volvemos al catálogo
+            if(product==null)
+            {
+                response.sendRedirect(request.getContextPath()+"/products");
+                return;
+            }
             request.setAttribute("product", product);
             // Indicamos a template.jsp que cargue detalle.jsp
             request.setAttribute("view", "detalle");
@@ -87,7 +93,7 @@ public class ProductsController extends HttpServlet {
      */
     @Override
     public String getServletInfo() {
-        return "Short description";
+        return "Catálogo y ficha de producto";
     }// </editor-fold>
 
 }

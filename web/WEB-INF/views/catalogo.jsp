@@ -6,6 +6,7 @@
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@taglib prefix="c" uri="jakarta.tags.core" %>
+<%@taglib prefix="fmt" uri="jakarta.tags.fmt" %>
 
 <h1>Catálogo de Productos</h1>
 
@@ -24,18 +25,20 @@
             <c:forEach var="p" items="${requestScope.products}">
                 <tr>
                     <td>
-                        <img src="${pageContext.request.contextPath}/img/${p.imageFile}" alt="${p.name}" width="80">
+                        <c:if test="${!empty p.imageFile}">
+                            <img src="${pageContext.request.contextPath}/img/${p.imageFile}" alt="<c:out value='${p.name}'/>" width="80">
+                        </c:if>
                     </td>
-                    <td>${p.name}</td>
-                    <td>$${p.price}</td>
-                    <td>${p.stock}</td>
-                    <td>
-                        <a href="${pageContext.request.contextPath}/product?id=${p.id}" class="btn">Ver</a>
-                    </td>
-                </tr>
-            </c:forEach>
-        </tbody>
-    </table>
+                    <td><c:out value="${p.name}"/></td>
+                    <td><fmt:formatNumber value="${p.price}" type="currency" currencySymbol="€"/></td>
+        <td>${p.stock}</td>
+        <td>
+            <a href="${pageContext.request.contextPath}/product?id=${p.id}" class="btn">Ver</a>
+        </td>
+    </tr>
+</c:forEach>
+</tbody>
+</table>
 </c:if>
 
 <c:if test="${empty requestScope.products}">

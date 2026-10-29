@@ -16,14 +16,17 @@
     </head>
     <body>
         <!-- Cabecera común -->
-        <header style="background-color: #222; color: white; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center;">
-            <h1 style="margin: 0; color: #e74c3c;">TiendaMTB</h1>
-            <nav>
-                <a href="${pageContext.request.contextPath}/products" style="color: white; margin-right: 15px;">Catálogo</a>
-                <a href="${pageContext.request.contextPath}/users" style="color: white; margin-right: 15px;">Usuarios</a>
-                <a href="${pageContext.request.contextPath}/login" style="color: white;">Login</a>
-            </nav>
-        </header>
+        <nav>
+            <a href="${pageContext.request.contextPath}/products" style="color: white; margin-right: 15px;">Catálogo</a>
+            <a href="${pageContext.request.contextPath}/users" style="color: white; margin-right: 15px;">Usuarios</a>
+            <c:if test="${empty sessionScope.usuario}">
+                <a href="${pageContext.request.contextPath}/auth/login" style="color: white;">Entrar</a>
+            </c:if>
+            <c:if test="${!empty sessionScope.usuario}">
+                <span style="margin-right: 15px;">Hola <c:out value="${sessionScope.usuario.name}"/></span>
+                <a href="${pageContext.request.contextPath}/auth/logout" style="color: white;">Salir</a>
+            </c:if>
+        </nav>
 
         <!-- Contenido dinámico: aquí se inyectará catalogo.jsp, detalle.jsp, etc. -->
         <main class="container" style="padding: 20px; min-height: 75vh;">

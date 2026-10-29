@@ -4,17 +4,19 @@
 <html>
     <head>
         <meta charset="UTF-8">
-        <title>Tienda MTB</title>
-        <link href="/tienda/css/main.css" rel="stylesheet" type="text/css"/>
+        <title>Tienda MTB - Usuarios</title>
+        <link href="${pageContext.request.contextPath}/css/main.css" rel="stylesheet" type="text/css"/>
     </head>
     <body>
         <nav>
-            | <a href="/tienda/user/new">Crear Nuevo Usuario</a> |
+            | <a href="${pageContext.request.contextPath}/products">Catálogo</a> |
+            <a href="${pageContext.request.contextPath}/user/new">Crear Nuevo Usuario</a> |
             <c:if test="${empty sessionScope.usuario}">
-                <a href="/tienda/auth/login">Entrar</a> |
+                <a href="${pageContext.request.contextPath}/auth/login">Entrar</a> |
             </c:if>
             <c:if test="${!empty sessionScope.usuario}">
-                Hola ${sessionScope.usuario.name} | <a href="/tienda/auth/logout">Salir</a> |
+                Hola <c:out value="${sessionScope.usuario.name}"/> |
+                <a href="${pageContext.request.contextPath}/auth/logout">Salir</a> |
             </c:if>
         </nav>
         <h1>Tienda MTB</h1>
@@ -26,11 +28,11 @@
                     <th>Nombre</th>
                     <th>Correo</th>
                 </tr>
-                <c:forEach var="user" items="${requestScope.users }" >
+                <c:forEach var="user" items="${requestScope.users}">
                     <tr>
                         <td>${user.id}</td>
-                        <td>${user.name}</td>
-                        <td>${user.email}</td>
+                        <td><c:out value="${user.name}"/></td>
+                        <td><c:out value="${user.email}"/></td>
                     </tr>
                 </c:forEach>
             </table>
