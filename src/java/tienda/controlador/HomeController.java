@@ -4,6 +4,7 @@
  */
 package tienda.controlador;
 
+import jakarta.servlet.RequestDispatcher;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -31,6 +32,11 @@ public class HomeController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        //Indicamos a template.jsp que cargue el fragmento home.jsp
+        request.setAttribute("view","home");
+        
+        RequestDispatcher rd = request.getRequestDispatcher("/WEB-INF/views/template.jsp");
+        rd.forward(request, response);
         
     }
 
@@ -50,7 +56,7 @@ public class HomeController extends HttpServlet {
      */
     @Override
     public String getServletInfo() {
-        return "Short description";
+        return "Controlador de la página de inicio";
     }// </editor-fold>
 
 }

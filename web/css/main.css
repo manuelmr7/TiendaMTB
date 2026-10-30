@@ -1,3 +1,14 @@
+/* Estilo de pantalla completa adaptativa solo para la página de inicio (Home) */
+body.home-body {
+    background-image: url('../img/pantallaPrincipal.JPG');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
 body {
     margin: 50px;
 }

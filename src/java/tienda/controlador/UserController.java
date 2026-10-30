@@ -81,7 +81,8 @@ public class UserController extends HttpServlet {
                 vista = "error";
             }
         }
-        RequestDispatcher rd = request.getRequestDispatcher("/WEB-INF/views/" + vista + ".jsp");
+        request.setAttribute("view",vista);
+        RequestDispatcher rd = request.getRequestDispatcher("/WEB-INF/views/template.jsp");
         rd.forward(request, response);
     }
 
@@ -111,11 +112,13 @@ public class UserController extends HttpServlet {
                 response.sendRedirect("http://localhost:8080/tienda/users");
             } catch (Exception e) {
                 request.setAttribute("msg", "Error: datos no válidos");
-                RequestDispatcher rd = request.getRequestDispatcher("/WEB-INF/views/error.jsp");
+                request.setAttribute("view","error");
+                RequestDispatcher rd = request.getRequestDispatcher("/WEB-INF/views/template.jsp");
                 rd.forward(request, response);
             }
         } else {
-            RequestDispatcher rd = request.getRequestDispatcher("/WEB-INF/views/error.jsp");
+            request.setAttribute("view","error");
+            RequestDispatcher rd = request.getRequestDispatcher("/WEB-INF/views/template.jsp");
             rd.forward(request, response);
         }
     }
@@ -145,7 +148,7 @@ public class UserController extends HttpServlet {
      */
     @Override
     public String getServletInfo() {
-        return "Short description";
+        return "Controlador de usuarios";
     }// </editor-fold>
 
 }

@@ -56,7 +56,8 @@ public class AuthController extends HttpServlet {
             response.sendRedirect(request.getContextPath() + "/users");
             return;
         }
-        RequestDispatcher rd = request.getRequestDispatcher("/WEB-INF/views/" + vista + ".jsp");
+        request.setAttribute("view", vista);
+        RequestDispatcher rd = request.getRequestDispatcher("/WEB-INF/views/template.jsp");
         rd.forward(request, response);
 
     }
@@ -75,7 +76,8 @@ public class AuthController extends HttpServlet {
         String accion = request.getPathInfo();
 
         if (!"/login".equals(accion)) {
-            RequestDispatcher rd = request.getRequestDispatcher("/WEB-INF/views/error.jsp");
+            request.setAttribute("view","error");
+            RequestDispatcher rd = request.getRequestDispatcher("/WEB-INF/views/template.jsp");
             rd.forward(request, response);
             return;
         }
@@ -105,7 +107,8 @@ public class AuthController extends HttpServlet {
         }
 
         request.setAttribute("msg", "Correo o clave incorrectos");
-        RequestDispatcher rd = request.getRequestDispatcher("/WEB-INF/views/login.jsp");
+        request.setAttribute("view","login");
+        RequestDispatcher rd = request.getRequestDispatcher("/WEB-INF/views/template.jsp");
         rd.forward(request, response);
     }
 
@@ -116,7 +119,7 @@ public class AuthController extends HttpServlet {
      */
     @Override
     public String getServletInfo() {
-        return "Short description";
+        return "Controlador de autenticación";
     }// </editor-fold>
 
 }
