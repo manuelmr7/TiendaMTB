@@ -1,33 +1,63 @@
+<div align="center">
+
 # TiendaMTB
 
-**Plataforma e-commerce especializada en componentes y equipamiento de ciclismo de montaña**, diseñada bajo una arquitectura **Java Enterprise MVC** con foco en la claridad de navegación, la seguridad de acceso y la mantenibilidad del código.
+**Plataforma e-commerce de componentes y equipamiento de ciclismo de montaña**, construida sobre **Java 21** y **Jakarta EE** con arquitectura MVC, control de acceso por roles y diseño responsivo.
 
-![Java](https://img.shields.io/badge/Java-17%2B-111111?style=flat-square&logo=openjdk&logoColor=white)
-![Jakarta EE](https://img.shields.io/badge/Jakarta_EE-Servlets_%26_JSP-111111?style=flat-square)
-![JPA](https://img.shields.io/badge/ORM-Jakarta_Persistence-111111?style=flat-square)
-![GlassFish](https://img.shields.io/badge/Server-GlassFish-111111?style=flat-square)
-![Bootstrap](https://img.shields.io/badge/UI-Bootstrap_5-111111?style=flat-square&logo=bootstrap&logoColor=white)
+<p>
+  <a href="#pilares-del-producto">Pilares</a> •
+  <a href="#arquitectura-y-flujo">Arquitectura</a> •
+  <a href="#modelo-de-datos">Modelo de Datos</a> •
+  <a href="#endpoints">Endpoints</a> •
+  <a href="#puesta-en-marcha">Puesta en Marcha</a> •
+  <a href="#roadmap">Roadmap</a>
+</p>
+
+![Java 21](https://img.shields.io/badge/Java-21-0F172A?style=for-the-badge&logo=openjdk&logoColor=38BDF8)
+![Jakarta EE](https://img.shields.io/badge/Jakarta_EE-Servlets_%26_JSP-0F172A?style=for-the-badge&logo=eclipseide&logoColor=F97316)
+![JPA](https://img.shields.io/badge/ORM-Jakarta_Persistence-0F172A?style=for-the-badge)
+![GlassFish 8](https://img.shields.io/badge/GlassFish-v8-0F172A?style=for-the-badge)
+![Bootstrap 5](https://img.shields.io/badge/Bootstrap-5-0F172A?style=for-the-badge&logo=bootstrap&logoColor=A855F7)
+
+</div>
 
 ---
 
-## Enfoque del Proyecto
+## Pilares del Producto
 
-Más allá de implementar un catálogo funcional, el desarrollo se ha centrado en resolver tres aspectos clave de cualquier producto digital real:
-
-* **Experiencia de usuario consistente:** Uso de una arquitectura de vistas modular (`template.jsp`) y diseño responsivo con Bootstrap, asegurando coherencia visual y tiempos de carga ligeros en cualquier dispositivo.
-* **Resiliencia ante fallos:** Gestión controlada de excepciones y rutas no válidas (`error.jsp`), evitando exponer trazas técnicas al usuario final y ofreciendo siempre una salida clara.
-* **Seguridad y gobierno de datos:** Separación estricta entre navegación pública, gestión de perfil de cliente y operaciones críticas de administración mediante control de acceso basado en roles (RBAC) y cifrado de credenciales (`PasswordUtils`).
+| Experiencia de Usuario (UX) | Seguridad y Gobierno | Ingeniería y Mantenibilidad |
+| :--- | :--- | :--- |
+| Interfaz limpia y adaptable con **Bootstrap 5** y plantilla maestra (`template.jsp`) que garantiza consistencia visual en catálogo, fichas y formularios. | Control de acceso basado en roles (**RBAC**) con separación estricta entre navegación pública, área de cliente y panel administrativo, más cifrado en `PasswordUtils`. | Desacoplamiento total entre enrutamiento (**Servlets**), dominio (**JPA**) y vistas (**JSP**), con manejo controlado de errores (`error.jsp`). |
 
 ---
 
-## Arquitectura y Modelo de Datos
+## Arquitectura y Flujo
 
-La aplicación desacopla el enrutamiento HTTP (**Servlets**), la lógica de dominio y persistencia (**JPA**) y la capa de presentación (**JSP**), facilitando que cualquier desarrollador pueda escalar o mantener un módulo sin afectar al resto.
+El sistema organiza cada petición HTTP siguiendo un flujo unidireccional claro, facilitando la trazabilidad y el mantenimiento colaborativo del código:
+
+```mermaid
+flowchart LR
+    A[Cliente Web<br/>Bootstrap 5 + JSP] -->|HTTP GET / POST| B[Capa Controlador<br/>Java 21 Servlets]
+    B -->|Validación y RBAC| C[Utilidades y Seguridad<br/>PasswordUtils / UserUtils]
+    B -->|Consultas y Transacciones| D[Capa de Dominio<br/>Entidades JPA]
+    D <-->|JDBC Pool| E[(Base de Datos<br/>Relacional)]
+    B -->|Renderizado Dinámico| A
+
+    style A fill:#0F172A,stroke:#38BDF8,color:#F8FAFC
+    style B fill:#0F172A,stroke:#F97316,color:#F8FAFC
+    style C fill:#0F172A,stroke:#10B981,color:#F8FAFC
+    style D fill:#0F172A,stroke:#A855F7,color:#F8FAFC
+    style E fill:#1E293B,stroke:#94A3B8,color:#F8FAFC
+```
+
+---
+
+## Modelo de Datos
 
 ```mermaid
 erDiagram
-    ROLE ||--o{ USERS : "define permisos"
-    CATEGORY ||--o{ PRODUCT : "organiza"
+    ROLE ||--o{ USERS : "asigna permisos"
+    CATEGORY ||--o{ PRODUCT : "clasifica"
     USERS {
         int id PK
         string username
@@ -52,71 +82,98 @@ erDiagram
     }
 ```
 
-### Mapa de Controladores
+---
 
-| Endpoint | Controlador | Responsabilidad | Nivel de Acceso |
+## Endpoints
+
+| Ruta | Controlador | Responsabilidad | Acceso |
 | :--- | :--- | :--- | :--- |
-| `/home` | `HomeController` | Vista principal y escaparate destacado | Público |
-| `/products` | `ProductsController` | Exploración por categorías y ficha técnica de producto | Público |
-| `/auth` | `AuthController` | Autenticación, gestión de sesión y cierre seguro | Público |
-| `/users` | `UserController` | Registro de clientes y mantenimiento de cuenta | Cliente |
-| `/admin` | `AdminController` | Gestión de inventario (CRUD) y promoción de roles | Administrador |
+| **`/home`** | `HomeController` | Vista principal y escaparate de productos destacados | `Público` |
+| **`/products`** | `ProductsController` | Exploración del catálogo por categorías y detalle técnico | `Público` |
+| **`/auth`** | `AuthController` | Inicio de sesión, validación de credenciales y cierre seguro | `Público` |
+| **`/users`** | `UserController` | Registro de nuevos clientes y gestión de perfil | `Cliente` |
+| **`/admin`** | `AdminController` | Gestión integral del catálogo (CRUD) y promoción de roles | `Admin` |
 
 ---
 
 ## Estructura del Repositorio
 
+<details>
+<summary><strong>Desplegar árbol completo de directorios</strong></summary>
+
 ```text
 TiendaMTB/
 ├── setup/
-│   └── glassfish-resources.xml   # Definición de pool de conexiones y recursos JDBC
+│   └── glassfish-resources.xml   # Pool de conexiones y recursos JDBC para GlassFish 8
 ├── src/
 │   ├── conf/
-│   │   └── persistence.xml       # Configuración de la unidad de persistencia JPA
+│   │   └── persistence.xml       # Unidad de persistencia Jakarta Persistence (JPA)
 │   └── java/
 │       ├── data.sql              # Seed inicial de roles, usuarios y catálogo MTB
 │       └── tienda/
-│           ├── controlador/      # Servlets (enrutamiento y control de flujo)
-│           ├── modelo/           # Entidades JPA (Category, Product, Role, Users)
-│           └── util/             # Seguridad (PasswordUtils) y helpers (UserUtils)
+│           ├── controlador/      # Servlets (enrutamiento y control de flujo MVC)
+│           │   ├── AdminController.java
+│           │   ├── AuthController.java
+│           │   ├── HomeController.java
+│           │   ├── ProductsController.java
+│           │   └── UserController.java
+│           ├── modelo/           # Entidades JPA del dominio
+│           │   ├── Category.java
+│           │   ├── Product.java
+│           │   ├── Role.java
+│           │   └── Users.java
+│           └── util/             # Seguridad y gestión de usuarios
+│               ├── PasswordUtils.java
+│               └── UserUtils.java
 ├── web/
 │   ├── WEB-INF/
-│   │   ├── glassfish-web.xml   # Descriptor de despliegue
-│   │   └── views/                # Vistas JSP desacopladas del acceso directo
-│   ├── css/                      # Bootstrap + hoja de estilos personalizada (main.css)
+│   │   ├── glassfish-web.xml   # Descriptor de despliegue en GlassFish 8
+│   │   └── views/                # Vistas JSP protegidas contra acceso directo
+│   ├── css/                      # Bootstrap 5 + estilos propios (main.css)
 │   └── img/                      # Recursos gráficos del catálogo
 └── build.xml                   # Automatización de empaquetado (.war) con Apache Ant
 ```
+
+</details>
 
 ---
 
 ## Puesta en Marcha
 
-> [!NOTE]
-> El proyecto está preparado para importarse y desplegarse directamente desde **Apache NetBeans** sobre **GlassFish Server**, aunque puede compilarse desde terminal mediante **Apache Ant**.
+> [!IMPORTANT]
+> Asegúrate de tener configurado **JDK 21** como runtime activo en **GlassFish Server 8** antes de registrar los recursos JDBC o desplegar el `.war`.
 
-1. **Preparar el servidor y la base de datos**
-   * Arranca tu instancia local de **GlassFish** y registra el pool JDBC definido en `setup/glassfish-resources.xml`.
-   * Verifica que el *DataSource* coincida con el declarado en `src/conf/persistence.xml`.
-   * Ejecuta `src/java/data.sql` sobre tu base de datos para cargar los datos iniciales de prueba.
+### 1. Configuración de Base de Datos
+1. Inicia **GlassFish 8** y registra el pool de conexiones definido en `setup/glassfish-resources.xml`.
+2. Verifica que el nombre JNDI del *DataSource* coincida con el declarado en `src/conf/persistence.xml`.
+3. Ejecuta el script `src/java/data.sql` en tu gestor de base de datos para cargar los roles, usuarios y productos iniciales.
 
-2. **Compilar y desplegar**
-   * Abre el proyecto en **Apache NetBeans** y ejecuta **Clean and Build** (o lanza `ant dist` desde la raíz para generar el `.war` en `dist/`).
-   * Despliega la aplicación y accede desde el navegador a:
-     ```text
-     http://localhost:8080/TiendaMTB/
-     ```
+### 2. Compilación y Despliegue
+Puedes abrir el proyecto directamente en **Apache NetBeans** (`Clean and Build` → `Run`) o generar el artefacto desde terminal mediante **Apache Ant**:
 
----
+```bash
+ant dist
+```
 
-## Próximos Pasos (Roadmap)
+Una vez desplegado en GlassFish, accede a la aplicación en:
 
-* [ ] Incorporar carrito de compra persistente en sesión y flujo completo de *checkout*.
-* [ ] Migrar la carga de filtros del catálogo a peticiones asíncronas (`Fetch API` / JSON) para evitar recargas de página.
-* [ ] Añadir contenedorización con `Docker` y `docker-compose` (GlassFish + Base de Datos) para despliegue en un solo comando.
+```text
+http://localhost:8080/TiendaMTB/
+```
 
 ---
 
-## Autoría
+## Roadmap
 
-Desarrollado por **Manuel Martín Rodrigo** ([@manuelmr7](https://github.com/manuelmr7)) como proyecto de ingeniería de software en el **Grado en Ingeniería Informática** de la **Universidad de Huelva (UHU)**.
+- [ ] **Carrito y Checkout:** Persistencia de cesta en sesión y flujo completo de confirmación de pedido.
+- [ ] **Filtrado Asíncrono:** Carga dinámica de productos por categoría mediante `Fetch API` y respuestas JSON sin recarga de página.
+- [ ] **Entorno Contenedorizado:** Configuración con `Docker` y `docker-compose` (GlassFish 8 + Base de Datos) para despliegue en un único comando.
+
+---
+
+<div align="center">
+
+Desarrollado por **Manuel Martín Rodrigo** ([@manuelmr7](https://github.com/manuelmr7))  
+Grado en Ingeniería Informática · **Universidad de Huelva (UHU)**
+
+</div>
