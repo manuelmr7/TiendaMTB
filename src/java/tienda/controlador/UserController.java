@@ -16,6 +16,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import jakarta.transaction.UserTransaction;
 import java.util.List;
 import java.util.logging.Logger;
@@ -68,11 +69,9 @@ public class UserController extends HttpServlet {
         }
         switch (accion) {
             case "/users" -> {
-                List<Users> lu;
-                TypedQuery<Users> q = em.createNamedQuery("Users.findAll", Users.class);
-                lu = q.getResultList();
-                request.setAttribute("users", lu);
-                vista = "users";
+                // El listado de usuarios ahora está en el panel de administración
+                response.sendRedirect(request.getContextPath() + "/admin");
+                return;
             }
             case "/new" -> {
                 vista = "formUsers";
@@ -81,7 +80,7 @@ public class UserController extends HttpServlet {
                 vista = "error";
             }
         }
-        request.setAttribute("view",vista);
+        request.setAttribute("view", vista);
         RequestDispatcher rd = request.getRequestDispatcher("/WEB-INF/views/template.jsp");
         rd.forward(request, response);
     }
@@ -97,27 +96,58 @@ public class UserController extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+
+        HttpSession session = request.getSession();
+        String cp = request.getContextPath();
         String accion = request.getPathInfo();
-        if (accion.equals("/save")) {
+
+        if ("/save".equals(accion)) {
             String name = request.getParameter("name");
             String email = request.getParameter("email");
-            String pwd = request.getParameter("password");
+            String pwd1 = request.getParameter("pwd1");
+            String pwd2 = request.getParameter("pwd2");
+
+            String msg;
+            String style;
+            String destino;
+
             try {
-                if (name.isEmpty() || email.isEmpty() || pwd.isEmpty()) {
-                    throw new NullPointerException();
+                if (name == null || email == null || pwd1 == null || pwd2 == null
+                        || name.isBlank() || email.isBlank() || pwd1.isEmpty() || pwd2.isEmpty()) {
+                    throw new Exception("Datos no válidos");
                 }
-                String hashPwd = PasswordUtils.hashPassword(pwd);
+                if (!email.contains("@")) {
+                    throw new Exception("Correo no válido");
+                }
+                if (!pwd1.equals(pwd2)) {
+                    throw new Exception("Las claves no coinciden");
+                }
+                if (pwd1.length() < 8) {
+                    throw new Exception("Clave demasiado corta");
+                }
+
+                String hashPwd = PasswordUtils.hashPassword(pwd1);
                 Users u = new Users(name, email, hashPwd);
                 save(u);
-                response.sendRedirect("http://localhost:8080/tienda/users");
+
+                msg = "Registro realizado correctamente. Ya puedes iniciar sesión.";
+                style = "success";
+                destino = cp + "/auth/login";
+
             } catch (Exception e) {
-                request.setAttribute("msg", "Error: datos no válidos");
-                request.setAttribute("view","error");
-                RequestDispatcher rd = request.getRequestDispatcher("/WEB-INF/views/template.jsp");
-                rd.forward(request, response);
+                Log.log(Level.WARNING, "Registro no válido: {0}", e.getMessage());
+                msg = "ERROR: datos de registro no válidos";
+                style = "danger";
+                destino = cp + "/user/new";
             }
+
+            // El mensaje viaja en la sesión porque después hay una redirección
+            session.setAttribute("msg", msg);
+            session.setAttribute("style", style);
+            response.sendRedirect(destino);
+
         } else {
-            request.setAttribute("view","error");
+            request.setAttribute("view", "error");
             RequestDispatcher rd = request.getRequestDispatcher("/WEB-INF/views/template.jsp");
             rd.forward(request, response);
         }

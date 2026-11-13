@@ -23,21 +23,35 @@
                 <div class="collapse navbar-collapse" id="menu">
                     <ul class="navbar-nav me-auto">
                         <li class="nav-item"><a class="nav-link" href="${ctx}/products">Catálogo</a></li>
-                        <li class="nav-item"><a class="nav-link" href="${ctx}/users">Usuarios</a></li>
+                            <c:if test="${sessionScope.role == 'ADMIN'}">
+                            <li class="nav-item"><a class="nav-link" href="${ctx}/admin">Admin</a></li>
+                            </c:if>
                     </ul>
                     <ul class="navbar-nav align-items-lg-center">
-                        <c:if test="${empty sessionScope.usuario}">
+                        <c:if test="${empty sessionScope.user}">
                             <li class="nav-item"><a class="nav-link" href="${ctx}/auth/login">Entrar</a></li>
                             <li class="nav-item"><a class="btn btn-danger btn-sm ms-lg-2" href="${ctx}/user/new">Registrarse</a></li>
-                        </c:if>
-                        <c:if test="${!empty sessionScope.usuario}">
-                            <li class="nav-item"><span class="navbar-text me-lg-3">Hola, <c:out value="${sessionScope.usuario.name}"/></span></li>
+                            </c:if>
+                            <c:if test="${!empty sessionScope.user}">
+                            <li class="nav-item"><span class="navbar-text me-lg-3">Hola, <c:out value="${sessionScope.user.name}"/></span></li>
                             <li class="nav-item"><a class="btn btn-outline-light btn-sm" href="${ctx}/auth/logout">Salir</a></li>
-                        </c:if>
+                            </c:if>
                     </ul>
                 </div>
             </div>
         </nav>
+        <!-- Mensajes (éxito, error...): vienen de la petición o de la sesión (tras una redirección) -->
+        <c:set var="flashMsg" value="${!empty requestScope.msg ? requestScope.msg : sessionScope.msg}"/>
+        <c:set var="flashStyle" value="${!empty requestScope.style ? requestScope.style : sessionScope.style}"/>
+        <c:if test="${!empty flashMsg and requestScope.view != 'error'}">
+            <div class="container mt-3">
+                <div class="alert alert-${empty flashStyle ? 'info' : flashStyle} mb-0" role="alert">
+                    <c:out value="${flashMsg}"/>
+                </div>
+            </div>
+        </c:if>
+        <c:remove var="msg" scope="session"/>
+        <c:remove var="style" scope="session"/>
 
         <!-- Contenido dinámico: catalogo.jsp, detalle.jsp, home.jsp, etc. -->
         <main class="${requestScope.view == 'home' ? 'flex-grow-1 d-flex align-items-center justify-content-center p-3' : 'container flex-grow-1 py-4'}">
@@ -48,7 +62,6 @@
         <footer class="${requestScope.view == 'home' ? 'footer-home' : 'bg-dark'} text-center text-white-50 py-3">
             &copy; 2026. TiendaMTB - Desarrollo de Aplicaciones Web.
         </footer>
-
-        <script src="${ctx}/js/bootstrap.bundle.min.js"></script>
+        <script src="${ctx}/js/bootstrap.bundle.js"></script>
     </body>
 </html>

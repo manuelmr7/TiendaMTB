@@ -53,7 +53,7 @@ public class AuthController extends HttpServlet {
             if (session != null) {
                 session.invalidate();
             }
-            response.sendRedirect(request.getContextPath() + "/users");
+            response.sendRedirect(request.getContextPath() + "/home"); //Para que un cliente no caiga en el msg de acceso restringido
             return;
         }
         request.setAttribute("view", vista);
@@ -96,9 +96,10 @@ public class AuthController extends HttpServlet {
                     Users u = lista.get(0);
                     HttpSession session = request.getSession();
                     request.changeSessionId();
-                    session.setAttribute("usuario", u);
+                    session.setAttribute("user",u);
+                    session.setAttribute("role",u.getRole());
                     Log.log(Level.INFO, "Login correcto: {0}", u.getEmail());
-                    response.sendRedirect(request.getContextPath() + "/users");
+                    response.sendRedirect(request.getContextPath() + "/home"); //Para que un cliente no caiga en el msg de acceso restringido
                     return;
                 }
             }
@@ -107,6 +108,7 @@ public class AuthController extends HttpServlet {
         }
 
         request.setAttribute("msg", "Correo o clave incorrectos");
+        request.setAttribute("style","danger");
         request.setAttribute("view","login");
         RequestDispatcher rd = request.getRequestDispatcher("/WEB-INF/views/template.jsp");
         rd.forward(request, response);

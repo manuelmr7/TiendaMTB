@@ -16,10 +16,10 @@ import javax.crypto.spec.PBEKeySpec;
 public class PasswordUtils {
 
     public static String hashPassword(String password) throws Exception {
-// Generar salt aleatorio
+        // Generar salt aleatorio
         byte[] salt = new byte[16]; // 16bytes=128bits
         new SecureRandom().nextBytes(salt);
-// Generar hash
+        // Generar hash
         PBEKeySpec spec = new PBEKeySpec(
                 password.toCharArray(),
                 salt,
@@ -28,10 +28,10 @@ public class PasswordUtils {
         );
         SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
         byte[] hash = factory.generateSecret(spec).getEncoded();
-// Convertir salt y hash a Base64
+        // Convertir salt y hash a Base64
         String saltBase64 = Base64.getEncoder().encodeToString(salt);
         String hashBase64 = Base64.getEncoder().encodeToString(hash);
-// Devolver salt:hash
+        // Devolver salt:hash
         return saltBase64 + ":" + hashBase64;
     }
 
