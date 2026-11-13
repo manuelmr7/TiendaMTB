@@ -2,8 +2,6 @@
 
 Aplicación web de comercio electrónico desarrollada bajo el patrón arquitectónico **Modelo-Vista-Controlador (MVC)** en **Java Enterprise**, orientada a la gestión y venta de componentes y accesorios de ciclismo de montaña (MTB).
 
-![Pantalla Principal](web/img/pantallaPrincipal.JPG)
-
 ---
 
 ## ✨ Funcionalidades Principales
