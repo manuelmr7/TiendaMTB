@@ -23,7 +23,7 @@ import tienda.modelo.Product;
 /**
  * Panel de administración: solo accesible para usuarios con rol ADMIN.
  */
-@WebServlet(name = "AdminController", urlPatterns = {"/admin","/admin/modif-catalogo"})
+@WebServlet(name = "AdminController", urlPatterns = {"/admin", "/admin/modif-catalogo"})
 public class AdminController extends HttpServlet {
 
     @PersistenceContext(unitName = "TiendaPU")
@@ -44,6 +44,14 @@ public class AdminController extends HttpServlet {
 
             List<Users> lu = em.createNamedQuery("Users.findAll", Users.class).getResultList();
             request.setAttribute("users", lu);
+            
+            List<Product> lp=em.createNamedQuery("Product.findAll",Product.class).getResultList();
+            request.setAttribute("products", lp);
+            
+            //Pestaña que se muestra abierta (por defecto mostramos los usuarios primero)
+            String tab = "products".equals(request.getParameter("tab")) ? "products" : "users";
+            request.setAttribute("tab", tab);
+
             request.setAttribute("view", "admin");
 
         } catch (Exception ex) {
@@ -57,6 +65,7 @@ public class AdminController extends HttpServlet {
         RequestDispatcher rd = request.getRequestDispatcher("/WEB-INF/views/template.jsp");
         rd.forward(request, response);
     }
+
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {

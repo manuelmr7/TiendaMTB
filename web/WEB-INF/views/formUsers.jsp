@@ -17,7 +17,8 @@
 
                     <div class="mb-3">
                         <label for="email" class="form-label">Email</label>
-                        <input type="text" class="form-control" id="emailRegister" name="email" />
+                        <input type="text" class="form-control" id="emailRegister" name="email"
+       data-url="${pageContext.request.contextPath}/checkemail" />
                         <span id="emailError" class="text-danger"></span>
                         <div id="emailInUse"></div>
                     </div>

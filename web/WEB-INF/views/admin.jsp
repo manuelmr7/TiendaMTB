@@ -1,48 +1,27 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@taglib prefix="c" uri="jakarta.tags.core" %>
+<c:set var="tab" value="${empty requestScope.tab ? 'users' : requestScope.tab}"/>
 
 <h1 class="h2 fw-bold mb-4">Panel de administración</h1>
 
-<ul class="nav nav-tabs mb-3">
-    <li class="nav-item">
-        <span class="nav-link active">Usuarios</span>
+<ul class="nav nav-tabs" id="adminTabs" role="tablist">
+    <li class="nav-item" role="presentation">
+        <button class="nav-link ${tab == 'users' ? 'active' : ''}" id="users-tab" data-bs-toggle="tab"
+                data-bs-target="#users" type="button" role="tab" aria-controls="users"
+                aria-selected="${tab == 'users'}">Usuarios</button>
     </li>
-    <li class="nav-item">
-        <span class="nav-link active">Catálogo</span>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link ${tab == 'products' ? 'active' : ''}" id="products-tab" data-bs-toggle="tab"
+                data-bs-target="#products" type="button" role="tab" aria-controls="products"
+                aria-selected="${tab == 'products'}">Productos</button>
     </li>
 </ul>
 
-<h2 class="h5 mb-3">Administración de usuarios</h2>
-
-<c:if test="${!empty requestScope.users}">
-    <div class="table-responsive">
-        <table class="table table-striped align-middle">
-            <thead class="table-dark">
-                <tr>
-                    <th>ID</th>
-                    <th>Nombre</th>
-                    <th>Correo</th>
-                    <th>Rol</th>
-                </tr>
-            </thead>
-            <tbody>
-            <c:forEach var="user" items="${requestScope.users}">
-                <tr>
-                    <td>${user.id}</td>
-                    <td><c:out value="${user.name}"/></td>
-                <td><c:out value="${user.email}"/></td>
-                <td>
-                    <span class="badge ${user.role == 'ADMIN' ? 'text-bg-danger' : 'text-bg-secondary'}">${user.role}</span>
-                </td>
-                </tr>
-            </c:forEach>
-            </tbody>
-        </table>
+<div class="tab-content mt-3">
+    <div class="tab-pane fade ${tab == 'users' ? 'show active' : ''}" id="users" role="tabpanel" aria-labelledby="users-tab">
+        <jsp:include page="admin/users.jsp" />
     </div>
-</c:if>
-
-<c:if test="${empty requestScope.users}">
-    <p class="text-muted">No hay usuarios todavía.</p>
-</c:if>
-    
-    
+    <div class="tab-pane fade ${tab == 'products' ? 'show active' : ''}" id="products" role="tabpanel" aria-labelledby="products-tab">
+        <jsp:include page="admin/products.jsp" />
+    </div>
+</div>

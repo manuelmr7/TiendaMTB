@@ -63,5 +63,6 @@
             &copy; 2026. TiendaMTB - Desarrollo de Aplicaciones Web.
         </footer>
         <script src="${ctx}/js/bootstrap.bundle.js"></script>
+        <script src="${ctx}/js/functions.js"></script>
     </body>
 </html>
